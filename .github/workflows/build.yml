@@ -1,8 +1,5 @@
 name:  ECR Deploy
-on:
-  push:
-    branches:
-      - master
+on: [push]
 env:
   AWS_DEFAULT_REGION: us-west-2
   AWS_DEFAULT_OUTPUT: json
@@ -11,7 +8,7 @@ env:
   APP_NAME: aws-github-akm
   VERSION: '0.0.1'
 jobs:
-  push-dev:
+  ecr-deliver:
     name: Build & Push
     runs-on: ubuntu-latest
     steps:
@@ -33,5 +30,7 @@ jobs:
           IMAGE_TAG: ${{env.VERSION}}
         run: |
           cd docker
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
