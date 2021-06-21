@@ -1,0 +1,4 @@
+FROM public.ecr.aws/lambda/python:3.8
+RUN pip install PyNaCl requests botocore boto3
+COPY app.py   ./
+CMD ["app.handler"]

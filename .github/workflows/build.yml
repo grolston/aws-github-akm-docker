@@ -1,0 +1,37 @@
+name: Dev Branch Deploy
+on:
+  push:
+    branches:
+      - master
+env:
+  AWS_DEFAULT_REGION: us-west-2
+  AWS_DEFAULT_OUTPUT: json
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  APP_NAME: aws-github-akm
+  VERSION: '0.0.1'
+jobs:
+  push-dev:
+    name: Build & Push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{env.AWS_DEFAULT_REGION}}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Build, tag, and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{secret.REGISTRY}}
+          ECR_REPOSITORY: ${{env.APP_NAME}}
+          IMAGE_TAG: ${{env.VERSION}}
+        run: |
+          cd docker
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
