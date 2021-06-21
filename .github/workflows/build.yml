@@ -1,4 +1,4 @@
-name: Dev Branch Deploy
+name:  ECR Deploy
 on:
   push:
     branches:
